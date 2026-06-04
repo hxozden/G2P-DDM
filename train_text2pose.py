@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--stage2_model', type=str, help='stage2 mode config')
     # parser = Point2textModelStage2.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
+    parser.set_defaults(max_steps=200_000_000)
     opt = TrainOptions(parser).parse()
 
     # data = How2SignTextPoseData(opt)
@@ -51,8 +52,7 @@ def main():
             accelerator='cuda', 
             gpus=opt.gpus, 
             strategy=DDPStrategy(find_unused_parameters=False))
-    trainer = pl.Trainer.from_argparse_args(opt, callbacks=callbacks, 
-                                            max_steps=200000000, **kwargs)
+    trainer = pl.Trainer.from_argparse_args(opt, callbacks=callbacks, **kwargs)
 
     trainer.validate(model, dataloaders=data.val_dataloader())
     # trainer.validate(model, dataloaders=data.test_dataloader())

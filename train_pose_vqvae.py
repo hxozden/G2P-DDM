@@ -18,6 +18,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser = PoseVQVAE.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
+    parser.set_defaults(max_steps=200_000_000)
     opt = TrainOptions(parser).parse()
 
     data = PhoenixPoseData(opt)
@@ -44,9 +45,7 @@ def main():
     kwargs = dict()
     if opt.gpus > 1:
         kwargs = dict(accelerator='cuda', gpus=opt.gpus, strategy="ddp")
-    trainer = pl.Trainer.from_argparse_args(
-        opt, callbacks=callbacks, 
-        max_steps=200000000, **kwargs)
+    trainer = pl.Trainer.from_argparse_args(opt, callbacks=callbacks, **kwargs)
     # trainer.validate(model, dataloaders=data.test_dataloader())
     trainer.fit(model, data)
 

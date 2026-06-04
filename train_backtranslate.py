@@ -21,6 +21,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser = BackTranslateModel.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
+    parser.set_defaults(max_steps=2_000_000)
     opt = TrainOptions(parser).parse()
     # print(opt)
     # print("opt.gpu_ids: ", opt.gpu_ids, type(opt.gpu_ids))
@@ -51,8 +52,7 @@ def main():
     kwargs = dict()
     if opt.gpus > 1:
         kwargs = dict(accelerator='cuda', gpus=opt.gpus, strategy="ddp")
-    trainer = pl.Trainer.from_argparse_args(opt, callbacks=callbacks, 
-                                            max_steps=2000000, **kwargs)
+    trainer = pl.Trainer.from_argparse_args(opt, callbacks=callbacks, **kwargs)
 
     # print(torch.distributed.get_rank())
     # trainer.fit(model, data)
